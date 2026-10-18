@@ -1,0 +1,84 @@
+@{
+    var ctl = ViewContext.RouteData.Values["controller"]?.ToString();
+    var act = ViewContext.RouteData.Values["action"]?.ToString();
+    string On(string c, string a) => (ctl == c && act == a) ? "active" : "";
+    bool auth = User.Identity.IsAuthenticated;
+}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - LifeLine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body data-auth="@(auth ? "1" : "0")">
+    <header class="topbar">
+        <div class="container d-flex align-items-center gap-4 flex-wrap">
+            <a class="brand" asp-controller="Home" asp-action="Index">
+                <svg width="18" height="22" viewBox="0 0 18 22" aria-hidden="true"><path d="M9 0C9 0 0 9.6 0 14.2 0 18.5 3.9 22 9 22s9-3.5 9-7.8C18 9.6 9 0 9 0z" fill="#e5484d" /></svg>
+                LifeLine
+            </a>
+            <nav class="nav-main flex-grow-1 d-flex flex-wrap" aria-label="Main">
+                @if (User.IsInRole("Donor"))
+                {
+                    <a class="@On("Donor","Dashboard")" asp-controller="Donor" asp-action="Dashboard">Dashboard</a>
+                    <a class="@On("Donor","History")" asp-controller="Donor" asp-action="History">History</a>
+                    <a class="@On("Donor","Profile")" asp-controller="Donor" asp-action="Profile">Profile</a>
+                }
+                else if (User.IsInRole("Hospital"))
+                {
+                    <a class="@On("Hospital","Dashboard")" asp-controller="Hospital" asp-action="Dashboard">Dashboard</a>
+                    <a class="@On("Hospital","NewRequest")" asp-controller="Hospital" asp-action="NewRequest">New request</a>
+                    <a class="@On("Hospital","Requests")" asp-controller="Hospital" asp-action="Requests">My requests</a>
+                }
+                else if (User.IsInRole("Admin"))
+                {
+                    <a class="@On("Admin","Dashboard")" asp-controller="Admin" asp-action="Dashboard">Dashboard</a>
+                    <a class="@On("Admin","Hospitals")" asp-controller="Admin" asp-action="Hospitals">Hospitals</a>
+                    <a class="@On("Admin","Donors")" asp-controller="Admin" asp-action="Donors">Donors</a>
+                    <a class="@On("Admin","Requests")" asp-controller="Admin" asp-action="Requests">Requests</a>
+                }
+            </nav>
+            <div class="d-flex align-items-center gap-3">
+                @if (auth)
+                {
+                    <span class="live" id="live-dot" title="Live connection to the server"><i></i><em>Connecting</em></span>
+                    <span class="who d-none d-md-inline">@User.Identity.Name</span>
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                        <button class="btn btn-ghost btn-sm">Sign out</button>
+                    </form>
+                }
+                else
+                {
+                    <a class="btn btn-ghost btn-sm" asp-controller="Account" asp-action="Login">Sign in</a>
+                    <a class="btn btn-red btn-sm" asp-controller="Account" asp-action="RegisterDonor">Join as donor</a>
+                }
+            </div>
+        </div>
+    </header>
+
+    <main class="container py-4">
+        @if (TempData["msg"] is string flash)
+        {
+            <div class="flash" role="status">@flash</div>
+        }
+        @RenderBody()
+    </main>
+
+    <footer class="container py-4 muted small">LifeLine, real-time blood donor alert and emergency coordination system. MCA mini project.</footer>
+
+    <div id="toasts" aria-live="polite"></div>
+    @if (auth)
+    {
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+    }
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

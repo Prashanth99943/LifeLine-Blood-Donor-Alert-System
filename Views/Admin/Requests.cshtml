@@ -1,0 +1,25 @@
+@model List<BloodRequest>
+@{
+    ViewData["Title"] = "Requests";
+}
+<h1 class="page-title mb-3">All emergency requests</h1>
+<div class="panel"><div class="scroll-x">
+    <table class="tbl">
+        <thead><tr><th>Raised</th><th>Hospital</th><th>Blood</th><th>Units</th><th>Urgency</th><th>Alerted</th><th>Accepted</th><th>Status</th></tr></thead>
+        <tbody>
+        @foreach (var b in Model)
+        {
+            <tr>
+                <td>@b.CreatedAt.ToString("dd MMM HH:mm")</td>
+                <td>@b.Hospital.Name</td>
+                <td><strong>@b.BloodGroup</strong></td>
+                <td>@b.UnitsNeeded</td>
+                <td><span class="tag t-@Fmt.Cls(b.Urgency)">@b.Urgency</span></td>
+                <td>@b.Responses.Count</td>
+                <td>@b.AcceptedCount</td>
+                <td><span class="tag t-@Fmt.Cls(b.Status)">@b.Status</span></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div></div>

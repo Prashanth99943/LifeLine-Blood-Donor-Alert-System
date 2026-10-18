@@ -1,0 +1,51 @@
+@model RequestLiveVm
+@{
+    var r = Model.Req;
+    int accepted = r.AcceptedCount;
+    int pct = Math.Min(100, accepted * 100 / Math.Max(1, r.UnitsNeeded));
+}
+<div class="panel mb-3">
+    <div class="panel-b">
+        <div class="d-flex justify-content-between align-items-center">
+            <strong>@accepted of @r.UnitsNeeded donors have accepted</strong>
+            <span class="tag t-@Fmt.Cls(r.Status)">@r.Status</span>
+        </div>
+        <div class="bar mt-2"><i style="width:@pct%"></i></div>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-h"><h3>Matched donors (@r.Responses.Count)</h3><span class="muted small">Highest match score first</span></div>
+    <div class="scroll-x">
+        <table class="tbl">
+            <thead><tr><th>Donor</th><th>Blood</th><th>Distance</th><th>Score</th><th>Answer</th><th>Contact</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var x in r.Responses.OrderByDescending(x => x.Score))
+            {
+                <tr>
+                    <td>@x.DonorProfile.FullName</td>
+                    <td>@x.DonorProfile.BloodGroup</td>
+                    <td>@x.DistanceKm km</td>
+                    <td>@x.Score</td>
+                    <td><span class="tag t-@Fmt.Cls(x.Status)">@(x.Status == ResponseStatus.Notified ? "Waiting" : x.Status.ToString())</span></td>
+                    <td>@(x.Status == ResponseStatus.Accepted ? x.DonorProfile.Phone : "Shared after acceptance")</td>
+                    <td>
+                        @if (x.Status == ResponseStatus.Accepted && !x.Donated)
+                        {
+                            <form asp-controller="Hospital" asp-action="MarkDonated" method="post">
+                                <input type="hidden" name="responseId" value="@x.Id" /><input type="hidden" name="requestId" value="@r.Id" />
+                                <button class="btn btn-go btn-sm">Mark donated</button>
+                            </form>
+                        }
+                        else if (x.Donated) { <span class="tag t-fulfilled">Donated</span> }
+                    </td>
+                </tr>
+            }
+            @if (!r.Responses.Any())
+            {
+                <tr><td colspan="7" class="muted">No eligible donor was found in range. Try a higher urgency to widen the search.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

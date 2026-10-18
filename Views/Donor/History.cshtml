@@ -1,0 +1,27 @@
+@model List<DonorResponse>
+@{
+    ViewData["Title"] = "History";
+}
+<h1 class="page-title mb-3">Your history</h1>
+<div class="panel"><div class="scroll-x">
+    <table class="tbl">
+        <thead><tr><th>Date</th><th>Hospital</th><th>Blood group</th><th>Distance</th><th>Your answer</th><th>Donated</th></tr></thead>
+        <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.NotifiedAt.ToString("dd MMM yyyy HH:mm")</td>
+                <td>@r.BloodRequest.Hospital.Name</td>
+                <td>@r.BloodRequest.BloodGroup</td>
+                <td>@r.DistanceKm km</td>
+                <td><span class="tag t-@Fmt.Cls(r.Status)">@(r.Status == ResponseStatus.Notified ? "No answer" : r.Status.ToString())</span></td>
+                <td>@(r.Donated ? "Yes" : "No")</td>
+            </tr>
+        }
+        @if (!Model.Any())
+        {
+            <tr><td colspan="6" class="muted">Nothing here yet. Requests you are alerted about will be listed here.</td></tr>
+        }
+        </tbody>
+    </table>
+</div></div>

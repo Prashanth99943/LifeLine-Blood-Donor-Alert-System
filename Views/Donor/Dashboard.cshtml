@@ -1,0 +1,12 @@
+@model DonorLiveVm
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<div class="mb-3">
+    <h1 class="page-title">Hello, @Model.Profile.FullName</h1>
+    <p class="muted mb-0">Emergency alerts appear below the moment a hospital needs your blood group.</p>
+</div>
+
+<div id="live" data-src="@Url.Action("Live", "Donor")">
+    @await Html.PartialAsync("_Live", Model)
+</div>

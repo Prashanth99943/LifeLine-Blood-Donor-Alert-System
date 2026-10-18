@@ -1,0 +1,42 @@
+@model RequestLiveVm
+@{
+    var r = Model.Req;
+    ViewData["Title"] = "Request " + r.Id;
+}
+<div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-3">
+    <div>
+        <h1 class="page-title">@r.UnitsNeeded x @r.BloodGroup</h1>
+        <p class="muted mb-0">
+            <span class="tag t-@Fmt.Cls(r.Urgency)">@r.Urgency</span>
+            <span class="ms-2">Raised @Fmt.Ago(r.CreatedAt), expires @r.ExpiresAt.ToString("dd MMM HH:mm") UTC</span>
+        </p>
+    </div>
+    @if (r.Status == RequestStatus.Open)
+    {
+        <form asp-action="Cancel" method="post">
+            <input type="hidden" name="id" value="@r.Id" />
+            <button class="btn btn-ghost">Cancel request</button>
+        </form>
+    }
+</div>
+
+<div class="panel mb-3">
+    <div class="panel-h">
+        <h3>Where the matched donors are</h3>
+        <div class="legend">
+            <span style="--c:#e5484d">Hospital</span><span style="--c:#5aa9e6">Alerted donor</span><span style="--c:#38b27b">Accepted</span>
+        </div>
+    </div>
+    <div id="map" class="map" style="border:0"></div>
+</div>
+
+<div id="live" data-src="@Url.Action("DetailsLive", "Hospital", new { id = r.Id })">
+    @await Html.PartialAsync("_DetailsLive", Model)
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script>
+        drawMap('map', @Html.Raw(Model.MapJson), @Model.Radius);
+    </script>
+}

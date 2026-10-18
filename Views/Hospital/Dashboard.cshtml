@@ -1,0 +1,15 @@
+@model HospitalLiveVm
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-3">
+    <div>
+        <h1 class="page-title">@Model.Hospital.Name</h1>
+        <p class="muted mb-0">Responses from donors appear here the moment they answer.</p>
+    </div>
+    <a class="btn btn-red" asp-action="NewRequest">Raise emergency request</a>
+</div>
+
+<div id="live" data-src="@Url.Action("Live", "Hospital")">
+    @await Html.PartialAsync("_Live", Model)
+</div>

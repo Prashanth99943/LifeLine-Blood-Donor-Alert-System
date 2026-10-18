@@ -1,0 +1,50 @@
+@model HospitalLiveVm
+@if (!Model.Hospital.IsVerified)
+{
+    <div class="flash warn">This hospital is waiting for admin verification. You can raise requests once it is verified.</div>
+}
+<div class="stats mb-4">
+    <div class="stat"><div class="n">@Model.Active</div><div class="l">Active requests</div></div>
+    <div class="stat"><div class="n">@Model.Fulfilled</div><div class="l">Requests fulfilled</div></div>
+    <div class="stat"><div class="n">@Model.Matched</div><div class="l">Donors matched</div></div>
+    <div class="stat"><div class="n">@Model.Responses</div><div class="l">Responses received</div></div>
+    <div class="stat"><div class="n">@Model.AvgResponseMin<span class="muted" style="font-size:1rem"> min</span></div><div class="l">Average time to accept</div></div>
+</div>
+
+<div class="cols">
+    <div class="panel">
+        <div class="panel-h"><h3>Recent requests</h3><a class="btn btn-ghost btn-sm" asp-action="Requests">View all</a></div>
+        <div class="scroll-x">
+            <table class="tbl">
+                <thead><tr><th>Blood</th><th>Units</th><th>Urgency</th><th>Covered</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var b in Model.Recent)
+                {
+                    <tr>
+                        <td><strong>@b.BloodGroup</strong></td>
+                        <td>@b.UnitsNeeded</td>
+                        <td><span class="tag t-@Fmt.Cls(b.Urgency)">@b.Urgency</span></td>
+                        <td>@b.AcceptedCount of @b.UnitsNeeded</td>
+                        <td><span class="tag t-@Fmt.Cls(b.Status)">@b.Status</span></td>
+                        <td><a asp-controller="Hospital" asp-action="Details" asp-route-id="@b.Id">Open</a></td>
+                    </tr>
+                }
+                @if (!Model.Recent.Any())
+                {
+                    <tr><td colspan="6" class="muted">No requests yet. Raise your first emergency request.</td></tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="panel">
+        <div class="panel-h"><h3>Live activity</h3></div>
+        <ul class="feed">
+            @foreach (var f in Model.Feed)
+            {
+                <li><span>@f.Text</span><time>@Fmt.Ago(f.Time)</time></li>
+            }
+            @if (!Model.Feed.Any()) { <li class="muted">Nothing yet.</li> }
+        </ul>
+    </div>
+</div>

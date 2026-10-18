@@ -1,0 +1,28 @@
+@model List<Hospital>
+@{
+    ViewData["Title"] = "Hospitals";
+}
+<h1 class="page-title mb-3">Hospitals and blood banks</h1>
+<div class="panel"><div class="scroll-x">
+    <table class="tbl">
+        <thead><tr><th>Name</th><th>City</th><th>Phone</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var h in Model)
+        {
+            <tr>
+                <td>@h.Name</td><td>@h.City</td><td>@h.Phone</td>
+                <td>@if (h.IsVerified) { <span class="tag t-fulfilled">Verified</span> } else { <span class="tag t-urgent">Pending</span> }</td>
+                <td>
+                    @if (!h.IsVerified)
+                    {
+                        <form asp-action="VerifyHospital" method="post">
+                            <input type="hidden" name="id" value="@h.Id" />
+                            <button class="btn btn-go btn-sm">Verify hospital</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div></div>

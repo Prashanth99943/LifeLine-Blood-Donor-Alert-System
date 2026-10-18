@@ -1,0 +1,21 @@
+@model List<DonorProfile>
+@{
+    ViewData["Title"] = "Donors";
+}
+<h1 class="page-title mb-3">Registered donors</h1>
+<div class="panel"><div class="scroll-x">
+    <table class="tbl">
+        <thead><tr><th>Name</th><th>Blood</th><th>City</th><th>Phone</th><th>Alerts</th><th>Last donation</th><th>Eligible</th></tr></thead>
+        <tbody>
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td>@d.FullName</td><td><strong>@d.BloodGroup</strong></td><td>@d.City</td><td>@d.Phone</td>
+                <td>@(d.IsAvailable ? "On" : "Off")</td>
+                <td>@(d.LastDonationDate == null ? "Never" : d.LastDonationDate.Value.ToString("dd MMM yyyy"))</td>
+                <td>@if (BloodRules.IsEligible(d.LastDonationDate)) { <span class="tag t-fulfilled">Yes</span> } else { <span class="tag t-urgent">Resting</span> }</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div></div>

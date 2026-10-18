@@ -1,0 +1,47 @@
+@model LoginVm
+@{
+    ViewData["Title"] = "Sign in";
+}
+<div class="row g-4 justify-content-center">
+    <div class="col-lg-5">
+        <div class="panel">
+            <div class="panel-h"><h3>Sign in</h3></div>
+            <div class="panel-b">
+                <form asp-action="Login" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" autofocus />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <button class="btn btn-red w-100">Sign in</button>
+                </form>
+                <p class="muted mt-3 mb-0">
+                    New here? <a asp-action="RegisterDonor">Register as a donor</a> or <a asp-action="RegisterHospital">register a hospital</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="panel">
+            <div class="panel-h"><h3>Demo accounts</h3></div>
+            <div class="scroll-x">
+                <table class="tbl">
+                    <thead><tr><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+                    <tbody>
+                        <tr><td>Admin</td><td>admin@lifeline.com</td><td>Admin@123</td></tr>
+                        <tr><td>Hospital (Chennai)</td><td>hospital1@lifeline.com</td><td>Pass@123</td></tr>
+                        <tr><td>Hospital (Hyderabad)</td><td>hospital2@lifeline.com</td><td>Pass@123</td></tr>
+                        <tr><td>Donor (O+, Chennai)</td><td>donor1@lifeline.com</td><td>Pass@123</td></tr>
+                        <tr><td>Donor (O-, Chennai)</td><td>donor4@lifeline.com</td><td>Pass@123</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

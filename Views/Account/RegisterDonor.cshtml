@@ -1,0 +1,39 @@
+@model DonorRegisterVm
+@{
+    ViewData["Title"] = "Register as donor";
+}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="panel">
+            <div class="panel-h"><h3>Register as a donor</h3></div>
+            <div class="panel-b">
+                <form asp-action="RegisterDonor" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                    <div class="row g-3">
+                        <div class="col-12"><label asp-for="FullName" class="form-label"></label><input asp-for="FullName" class="form-control" /><span asp-validation-for="FullName" class="text-danger small"></span></div>
+                        <div class="col-md-6"><label asp-for="Email" class="form-label"></label><input asp-for="Email" class="form-control" /><span asp-validation-for="Email" class="text-danger small"></span></div>
+                        <div class="col-md-6"><label asp-for="Password" class="form-label"></label><input asp-for="Password" class="form-control" /><span asp-validation-for="Password" class="text-danger small"></span></div>
+                        <div class="col-md-6"><label asp-for="Phone" class="form-label"></label><input asp-for="Phone" class="form-control" inputmode="numeric" maxlength="10" /><span asp-validation-for="Phone" class="text-danger small"></span></div>
+                        <div class="col-md-3">
+                            <label asp-for="BloodGroup" class="form-label"></label>
+                            <select asp-for="BloodGroup" class="form-select">
+                                <option value="">Select</option>
+                                @foreach (var g in BloodRules.Groups) { <option value="@g">@g</option> }
+                            </select>
+                            <span asp-validation-for="BloodGroup" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="City" class="form-label"></label>
+                            <select asp-for="City" class="form-select">
+                                <option value="">Select</option>
+                                @foreach (var c in CityData.Cities.Keys) { <option value="@c">@c</option> }
+                            </select>
+                            <span asp-validation-for="City" class="text-danger small"></span>
+                        </div>
+                    </div>
+                    <button class="btn btn-red w-100 mt-4">Create donor account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

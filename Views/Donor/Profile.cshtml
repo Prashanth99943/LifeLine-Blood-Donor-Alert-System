@@ -1,0 +1,42 @@
+@model ProfileVm
+@{
+    ViewData["Title"] = "Profile";
+    var d = (DonorProfile)ViewBag.Donor;
+}
+<h1 class="page-title mb-3">Your profile</h1>
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="panel">
+            <div class="panel-h"><h3>Contact and availability</h3></div>
+            <div class="panel-b">
+                <form asp-action="Profile" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                    <div class="mb-3"><label asp-for="Phone" class="form-label"></label><input asp-for="Phone" class="form-control" maxlength="10" /><span asp-validation-for="Phone" class="text-danger small"></span></div>
+                    <div class="mb-3">
+                        <label asp-for="City" class="form-label"></label>
+                        <select asp-for="City" class="form-select">
+                            @foreach (var c in CityData.Cities.Keys) { <option value="@c">@c</option> }
+                        </select>
+                        <span asp-validation-for="City" class="text-danger small"></span>
+                    </div>
+                    <div class="form-check form-switch mb-4">
+                        <input asp-for="IsAvailable" class="form-check-input" />
+                        <label asp-for="IsAvailable" class="form-check-label">Send me emergency alerts</label>
+                    </div>
+                    <button class="btn btn-red">Save profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="panel">
+            <div class="panel-h"><h3>Donation record</h3></div>
+            <table class="tbl"><tbody>
+                <tr><td class="muted">Name</td><td>@d.FullName</td></tr>
+                <tr><td class="muted">Blood group</td><td>@d.BloodGroup</td></tr>
+                <tr><td class="muted">Last donation</td><td>@(d.LastDonationDate == null ? "No donation recorded yet" : d.LastDonationDate.Value.ToString("dd MMM yyyy"))</td></tr>
+                <tr><td class="muted">Next eligible</td><td>@(BloodRules.IsEligible(d.LastDonationDate) ? "Now" : d.LastDonationDate.Value.AddDays(BloodRules.GapDays).ToString("dd MMM yyyy"))</td></tr>
+            </tbody></table>
+        </div>
+    </div>
+</div>

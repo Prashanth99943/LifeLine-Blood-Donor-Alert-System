@@ -1,0 +1,70 @@
+@model DonorLiveVm
+<div class="stats mb-4">
+    <div class="stat"><div class="n">@Model.Profile.BloodGroup</div><div class="l">Your blood group</div></div>
+    <div class="stat">
+        <div class="n @(Model.Eligible ? "text-go" : "text-amber")">@(Model.Eligible ? "Ready" : "Resting")</div>
+        <div class="l">@(Model.Eligible ? "Eligible to donate now" : $"Eligible again on {Model.NextEligible:dd MMM yyyy}")</div>
+    </div>
+    <div class="stat"><div class="n">@Model.Donations</div><div class="l">Donations completed</div></div>
+    <div class="stat"><div class="n @(Model.Profile.IsAvailable ? "text-go" : "text-amber")">@(Model.Profile.IsAvailable ? "On" : "Off")</div><div class="l">Alerts (change in Profile)</div></div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <h2 class="sec-title">Emergency alerts</h2>
+    <span class="muted">@Model.Pending.Count waiting for your answer</span>
+</div>
+
+@if (!Model.Pending.Any())
+{
+    <div class="panel panel-b muted mb-4">No open alerts for you right now. Keep alerts switched on and this page updates the moment a match is found.</div>
+}
+@foreach (var r in Model.Pending)
+{
+    var u = Fmt.Cls(r.BloodRequest.Urgency);
+    <div class="ticket @u">
+        <div class="bar-tone"></div>
+        <div class="body">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <div class="grp">@r.BloodRequest.BloodGroup</div>
+                <div>
+                    <strong>@r.BloodRequest.Hospital.Name</strong>
+                    <div class="muted">Needs @r.BloodRequest.UnitsNeeded unit(s). You are @r.DistanceKm km away. Match score @r.Score.</div>
+                    <div class="small"><span class="muted">@Fmt.Ago(r.NotifiedAt)</span> <span class="tag t-@u ms-2">@r.BloodRequest.Urgency</span></div>
+                </div>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(r.BloodRequest.PatientNote))
+            {
+                <div class="muted small mt-2">Note: @r.BloodRequest.PatientNote</div>
+            }
+        </div>
+        <div class="act">
+            <form asp-controller="Donor" asp-action="Respond" method="post">
+                <input type="hidden" name="id" value="@r.Id" /><input type="hidden" name="accept" value="true" />
+                <button class="btn btn-go">Accept</button>
+            </form>
+            <form asp-controller="Donor" asp-action="Respond" method="post">
+                <input type="hidden" name="id" value="@r.Id" /><input type="hidden" name="accept" value="false" />
+                <button class="btn btn-ghost">Decline</button>
+            </form>
+        </div>
+    </div>
+}
+
+@if (Model.Accepted.Any())
+{
+    <h2 class="sec-title mt-4 mb-2">You said yes</h2>
+    <div class="panel"><div class="scroll-x">
+        <table class="tbl">
+            <thead><tr><th>Hospital</th><th>City</th><th>Phone</th><th>Blood group</th><th>Status</th></tr></thead>
+            <tbody>
+            @foreach (var r in Model.Accepted)
+            {
+                <tr>
+                    <td>@r.BloodRequest.Hospital.Name</td><td>@r.BloodRequest.Hospital.City</td><td>@r.BloodRequest.Hospital.Phone</td>
+                    <td>@r.BloodRequest.BloodGroup</td><td><span class="tag t-accepted">Waiting for donation</span></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div></div>
+}

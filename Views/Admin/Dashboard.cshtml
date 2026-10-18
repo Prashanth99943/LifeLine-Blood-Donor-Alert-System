@@ -1,0 +1,54 @@
+@model AdminLiveVm
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<div class="mb-3">
+    <h1 class="page-title">System overview</h1>
+    <p class="muted mb-0">Counters and activity update live as hospitals and donors act.</p>
+</div>
+
+<div id="live" data-src="@Url.Action("Live", "Admin")">
+    @await Html.PartialAsync("_Live", Model)
+</div>
+
+<div class="row g-3 mt-1">
+    <div class="col-lg-7">
+        <div class="panel"><div class="panel-h"><h3>Requests by blood group</h3></div><div class="panel-b"><div class="chart-box"><canvas id="byGroup"></canvas></div></div></div>
+    </div>
+    <div class="col-lg-5">
+        <div class="panel"><div class="panel-h"><h3>Request outcomes</h3></div><div class="panel-b"><div class="chart-box"><canvas id="byStatus"></canvas></div></div></div>
+    </div>
+</div>
+
+<div class="panel mt-3">
+    <div class="panel-h">
+        <h3>Donors and hospitals</h3>
+        <div class="legend"><span style="--c:#e5484d">Hospital</span><span style="--c:#5aa9e6">Donor</span></div>
+    </div>
+    <div id="map" class="map" style="border:0"></div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script>
+        const G = @Html.Raw((string)ViewBag.GroupJson);
+        const S = @Html.Raw((string)ViewBag.StatusJson);
+        Chart.defaults.color = '#8fa0b2';
+        Chart.defaults.borderColor = '#2c3b4b';
+        Chart.defaults.font.family = 'Archivo, sans-serif';
+
+        new Chart(document.getElementById('byGroup'), {
+            type: 'bar',
+            data: { labels: G.labels, datasets: [{ data: G.data, backgroundColor: '#5aa9e6' }] },
+            options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+        });
+        new Chart(document.getElementById('byStatus'), {
+            type: 'doughnut',
+            data: { labels: S.labels, datasets: [{ data: S.data, backgroundColor: ['#5aa9e6', '#38b27b', '#8fa0b2', '#4a5a6b'], borderWidth: 0 }] },
+            options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'right' } } }
+        });
+
+        drawMap('map', @Html.Raw((string)ViewBag.MapJson), 0);
+    </script>
+}

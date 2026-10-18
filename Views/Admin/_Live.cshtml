@@ -1,0 +1,20 @@
+@model AdminLiveVm
+<div class="stats mb-3">
+    <div class="stat"><div class="n">@Model.Donors</div><div class="l">Registered donors</div></div>
+    <div class="stat"><div class="n text-go">@Model.EligibleNow</div><div class="l">Ready to donate now</div></div>
+    <div class="stat"><div class="n">@Model.HospitalsVerified</div><div class="l">Verified hospitals</div></div>
+    <div class="stat"><div class="n @(Model.HospitalsPending > 0 ? "text-amber" : "")">@Model.HospitalsPending</div><div class="l">Waiting for verification</div></div>
+    <div class="stat"><div class="n">@Model.Active</div><div class="l">Active emergencies</div></div>
+    <div class="stat"><div class="n">@Model.Fulfilled</div><div class="l">Fulfilled of @Model.Total</div></div>
+    <div class="stat"><div class="n">@Model.AcceptRate<span class="muted" style="font-size:1rem">%</span></div><div class="l">Donor accept rate</div></div>
+</div>
+<div class="panel">
+    <div class="panel-h"><h3>Live activity</h3></div>
+    <ul class="feed">
+        @foreach (var f in Model.Feed)
+        {
+            <li><span>@f.Text</span><time>@Fmt.Ago(f.Time)</time></li>
+        }
+        @if (!Model.Feed.Any()) { <li class="muted">Nothing yet.</li> }
+    </ul>
+</div>
